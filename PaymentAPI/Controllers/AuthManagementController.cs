@@ -67,7 +67,6 @@ namespace PaymentAPI.Controllers
                 {
                     //var jwtToken = await GenerateJwtToken(newUser);
                     return new JsonResult("Register success !!") {StatusCode = 200};
-                    return Ok("Register success !!");
                 }
                 else
                 {
@@ -327,7 +326,7 @@ namespace PaymentAPI.Controllers
                     return null;
                 }
             }
-            catch (Exception e)
+            catch 
             {
                 return null;
             } 
