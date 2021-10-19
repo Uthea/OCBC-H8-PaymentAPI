@@ -47,7 +47,10 @@ namespace PaymentAPI
                                      ValidateLifetime = true,
                                      RequireExpirationTime = false,
              };
- 
+
+             //dependency injection
+             services.AddScoped<IPaymentDetailService, PaymentDetailService>();
+             services.AddScoped<IAuthManagementService, AuthManagementService>();
              services.AddSingleton(tokenValidationParameters);
              services.AddSingleton(jwtSecret);
              services.AddAuthentication(options => {
@@ -95,8 +98,6 @@ namespace PaymentAPI
                 
             });
             
-            //dependency injection
-            services.AddScoped<IPaymentDetailService, PaymentDetailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
