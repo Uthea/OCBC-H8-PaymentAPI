@@ -26,17 +26,17 @@ namespace PaymentAPI.Controllers
         private readonly TokenValidationParameters _tokenValidationParameters;
         private readonly AppDbContext _appDbContext;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly JwtConfig _jwtConfig;
+        private readonly string _jwtSecret;
 
         public AuthManagementController(
             UserManager<IdentityUser> userManager,
-            IOptionsMonitor<JwtConfig> optionsMonitor,
+            string jwtSecret,
             TokenValidationParameters tokenValidationParameters,
             AppDbContext appDbContext
         )
         {
             _userManager = userManager;
-            _jwtConfig = optionsMonitor.CurrentValue;
+            _jwtSecret = jwtSecret;
             _tokenValidationParameters = tokenValidationParameters;
             _appDbContext = appDbContext;
         }
@@ -137,7 +137,7 @@ namespace PaymentAPI.Controllers
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
-            var key = Encoding.ASCII.GetBytes(_jwtConfig.Secret);
+            var key = Encoding.ASCII.GetBytes(_jwtSecret);
 
             var expireTime = DateTime.UtcNow.AddMinutes(30);
 

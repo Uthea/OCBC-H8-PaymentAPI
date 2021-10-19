@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PaymentAPI.Configuration;
@@ -35,8 +36,8 @@ namespace PaymentAPI
         public void ConfigureServices(IServiceCollection services)
         {
             string connString = EnvirontmentVar.PostgreDatabaseConnection();
-            
-             services.Configure<JwtConfig>(Configuration.GetSection("JwtConfig"));
+            string jwtSecret = EnvirontmentVar.GetJwtSecret();
+
              var key = Encoding.ASCII.GetBytes(EnvirontmentVar.GetJwtSecret());
              var tokenValidationParameters = new TokenValidationParameters {
                                      ValidateIssuerSigningKey = true,
@@ -48,6 +49,7 @@ namespace PaymentAPI
              };
  
              services.AddSingleton(tokenValidationParameters);
+             services.AddSingleton(jwtSecret);
              services.AddAuthentication(options => {
                  options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                  options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
