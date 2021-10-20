@@ -77,7 +77,7 @@ namespace PaymentAPI.Controllers
                 {
                     return BadRequest(new RegistrationResponse() {
                         Errors = new List<string>() {
-                            "Invalid login request"
+                            "Invalid login request : email not found"
                         },
 
                         Success = false
@@ -90,7 +90,7 @@ namespace PaymentAPI.Controllers
                 {
                     return BadRequest(new RegistrationResponse(){
                         Errors = new List<string>() {
-                            "Invalid login request"
+                            "Invalid login request : wrong password"
                         },
                         Success = false
                     });

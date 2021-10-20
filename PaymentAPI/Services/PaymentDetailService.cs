@@ -26,7 +26,6 @@ namespace PaymentAPI.Services
                 await _context.SaveChangesAsync();
 
                 return data;
-                
         }
 
         public async Task<PaymentDetail> GetPaymentDetailById(int id)

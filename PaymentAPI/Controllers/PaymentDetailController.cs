@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -34,8 +35,10 @@ namespace PaymentAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                data = await _paymentDetailService.CreatePaymentDetail(data);
-                return CreatedAtAction("GetPaymentDetail", new {id = data.paymentDetailId}, data);
+                await _paymentDetailService.CreatePaymentDetail(data);
+                //data = await _paymentDetailService.CreatePaymentDetail(data);
+                //return CreatedAtAction("GetPaymentDetail", new {id = data.paymentDetailId}, data);
+                return new JsonResult("Successfully inserted new data") {StatusCode = 200};
             }
 
             return new JsonResult("Something went wrong") {StatusCode = 500};
@@ -46,8 +49,10 @@ namespace PaymentAPI.Controllers
         public async Task<IActionResult> GetPaymentDetail(int id)
         {
             var itemPaymentDetail = await _paymentDetailService.GetPaymentDetailById(id);
-
-            if (itemPaymentDetail == null) return NotFound();
+            if (itemPaymentDetail == null)
+                return new JsonResult(
+                    String.Format("Payment Detail with id : {0} doesn't exist in database", id)
+                ) {StatusCode = 404};
 
             return Ok(itemPaymentDetail);
         }
@@ -61,10 +66,12 @@ namespace PaymentAPI.Controllers
 
             if (itemPaymentDetail == null)
             {
-                return NotFound();
+                return new JsonResult(
+                    String.Format("Payment Detail with id : {0} doesn't exist in database", id)
+                ) {StatusCode = 404};
             }
 
-            return NoContent();
+            return new JsonResult("Data is successfully updated") {StatusCode = 200};
         }
 
         [HttpDelete("{id}")]
@@ -72,13 +79,12 @@ namespace PaymentAPI.Controllers
         {
             var itemPaymentDetail = await _paymentDetailService.DeletePaymentDetail(id);
 
-            if (itemPaymentDetail == null) return NotFound();
-            
-            return Ok(itemPaymentDetail);
+            if (itemPaymentDetail == null)
+                return new JsonResult(
+                    String.Format("Payment Detail with id : {0} doesn't exist in database", id)
+                ) {StatusCode = 404};
+
+            return new JsonResult("Data is successfully deleted") {StatusCode = 200};
         }
-        
-
-
-        
     }
 }

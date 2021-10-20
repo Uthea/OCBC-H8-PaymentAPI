@@ -17,7 +17,7 @@ namespace PaymentAPI.Tests
         
         
         [Fact]
-        public void Should_ReturnJSONResult_WhenRegisterSucceed()
+        public void Should_ReturnSucceed_WhenRegister()
         {
             var _authManagementService = new Mock<IAuthManagementService>();
             AuthManagementController _authManagementController = new AuthManagementController(_authManagementService.Object);
@@ -33,13 +33,13 @@ namespace PaymentAPI.Tests
 
              var result = _authManagementController.Register(userDTO);
              
-             //Assert.Equal(TaskStatus.RanToCompletion, result.Status);
-             Assert.IsType<JsonResult>(result.Result);
+             var json = Assert.IsType<JsonResult>(result.Result);
+             Assert.Equal( "Register success !!", json.Value);
 
         }
         
          [Fact]
-         public void Should_ReturnBadRequestObjectResult_WhenEmailExistAtRegister()
+         public void Should_EmailAlreadyExist_WhenRegister()
          {
            var userDTO = new UserRegistrationDto
            {
@@ -60,8 +60,9 @@ namespace PaymentAPI.Tests
              
              var result = _authManagementController.Register(userDTO);
 
-             Assert.IsType<BadRequestObjectResult>(result.Result);
-
+             var regisRes = Assert.IsType<BadRequestObjectResult>(result.Result);
+             var value = Assert.IsType<RegistrationResponse>(regisRes.Value);
+             Assert.Equal("Email already in use", value.Errors[0]);
          }       
         
         
