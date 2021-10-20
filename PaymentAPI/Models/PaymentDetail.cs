@@ -11,7 +11,12 @@ namespace PaymentAPI.Models
         
         [Required]
         public string cardOwnerName { get; set; }
-            
+       
+        [Required]
+        [CreditCard]
+        public string cardNumber { get; set; }
+        
+        [Required]
         [DateValidation]
         public string expirationDate { get; set; }
         

@@ -44,6 +44,7 @@ namespace PaymentAPI.Services
              if (itemPaymentDetail == null) return null;
  
              itemPaymentDetail.cardOwnerName = data.cardOwnerName;
+             itemPaymentDetail.cardNumber = data.cardNumber;
              itemPaymentDetail.expirationDate = data.expirationDate;
              itemPaymentDetail.securityCode = data.securityCode; 
              

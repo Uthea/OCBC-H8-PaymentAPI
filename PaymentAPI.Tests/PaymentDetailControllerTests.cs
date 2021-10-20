@@ -83,6 +83,7 @@ namespace PaymentAPI.Tests
             var newPaymentDetail = new PaymentDetail
             {
                 cardOwnerName = "test123",
+                cardNumber = "1234123412341234",
                 expirationDate = "06/11/2020",
                 securityCode = "455"
             };
@@ -108,6 +109,7 @@ namespace PaymentAPI.Tests
             var newPaymentDetail = new PaymentDetail
             {
                 cardOwnerName = "tesla",
+                cardNumber = "0234123412341234",
                 expirationDate = "06/11/2021",
                 securityCode = "476"
             };
@@ -120,6 +122,7 @@ namespace PaymentAPI.Tests
             var pairs = new List<Tuple<object, object>>()
             {
                 new(item.cardOwnerName, newPaymentDetail.cardOwnerName),
+                new(item.cardNumber, newPaymentDetail.cardNumber),
                 new(item.expirationDate, newPaymentDetail.expirationDate),
                 new(item.securityCode, item.securityCode)
             };
@@ -154,12 +157,12 @@ namespace PaymentAPI.Tests
             {
                 new PaymentDetail
                 {
-                    cardOwnerName = "sebastian", expirationDate = "05/05/2021", securityCode = "562",
+                    cardOwnerName = "sebastian", cardNumber = "12312412412415654", expirationDate = "05/05/2021", securityCode = "562",
                     paymentDetailId = 1
                 },
                 new PaymentDetail
                 {
-                    cardOwnerName = "lasagna", expirationDate = "06/05/2022", securityCode = "532", paymentDetailId = 2
+                    cardOwnerName = "lasagna", cardNumber = "12367583475642456", expirationDate = "06/05/2022", securityCode = "532", paymentDetailId = 2
                 }
             };
 

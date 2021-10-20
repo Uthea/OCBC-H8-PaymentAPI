@@ -11,7 +11,7 @@ namespace PaymentAPI.Validation
             DateTime dt;
             var isValid = DateTime.TryParseExact(
                 Convert.ToString(value),
-                "MM/dd/yyyy",
+                "MM/yy",
                 CultureInfo.CurrentCulture,
                 DateTimeStyles.None,
                 out dt);
