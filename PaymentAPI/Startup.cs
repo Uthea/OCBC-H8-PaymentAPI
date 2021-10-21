@@ -35,7 +35,7 @@ namespace PaymentAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connString = EnvirontmentVar.PostgreDatabaseConnection();
+            string connString = EnvirontmentVar.MySQLDatabaseConnection();
             string jwtSecret = EnvirontmentVar.GetJwtSecret();
 
              var key = Encoding.ASCII.GetBytes(EnvirontmentVar.GetJwtSecret());
@@ -44,7 +44,7 @@ namespace PaymentAPI
                                      IssuerSigningKey = new SymmetricSecurityKey(key),
                                      ValidateIssuer = false,
                                      ValidateAudience =false,
-                                     ValidateLifetime = true,
+                                     ValidateLifetime = false,
                                      RequireExpirationTime = false,
              };
 
@@ -68,7 +68,7 @@ namespace PaymentAPI
                      .AddEntityFrameworkStores<AppDbContext>();           
 
             services.AddDbContext<AppDbContext>(
-                options => options.UseNpgsql(connString));
+                options => options.UseMySQL(connString));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

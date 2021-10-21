@@ -102,26 +102,6 @@ namespace PaymentAPI.Services
 
         public async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
         {
-            var tokenInVerification = ValidateJwtTokenAlgorithm(tokenRequest.Token);
-
-            if (tokenInVerification == null)
-            {
-                return null;
-            }
-
-            if (tokenInVerification.Identity.AuthenticationType == "expired")
-            {
-                return new AuthResult()
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Token has expired please re-login"
-                    }
-                };
-            }
-            
-
             var storedToken = await _appDbContext.RefreshTokens.FirstOrDefaultAsync(
                 x => x.Token == tokenRequest.RefreshToken);
 
@@ -148,22 +128,6 @@ namespace PaymentAPI.Services
                     }
                 };
             }
-            
-
-            var jti = tokenInVerification.Claims.FirstOrDefault(
-                x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-
-            if (storedToken.JwtId != jti)
-            {
-                return new AuthResult()
-                {
-                    Success = false,
-                    Errors = new List<string>()
-                    {
-                        "Token doesn't match"
-                    }
-                };
-            }
 
             if (storedToken.IsUsed)
             {
@@ -176,23 +140,43 @@ namespace PaymentAPI.Services
                     }
                 };
             }
+
+             var tokenInVerification = ValidateJwtTokenAlgorithm(tokenRequest.Token);           
+             
+             
+            if (tokenInVerification == null)
+            {
+                return null;
+            }
             
-              var utcExpiryDate = long.Parse(tokenInVerification.Claims.FirstOrDefault(
-                  x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-  
-              var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
-  
-              if (expiryDate > DateTime.UtcNow)
+
+             if (storedToken.ExpiryDate < DateTime.UtcNow)
+             {
+              return new AuthResult()
               {
-                  return new AuthResult()
+                  Success = false,
+                  Errors = new List<string>()
                   {
-                      Success = false,
-                      Errors = new List<string>()
-                      {
-                          "Token has not expired yet"
-                      }
-                  };
-              }           
+                      "Refresh token has expired please re-login"
+                  }
+              };                
+             }
+            
+             var jti = tokenInVerification.Claims.FirstOrDefault(
+                 x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+ 
+             if (storedToken.JwtId != jti)
+             {
+                 return new AuthResult()
+                 {
+                     Success = false,
+                     Errors = new List<string>()
+                     {
+                         "Token doesn't match"
+                     }
+                 };
+             }           
+            
 
             storedToken.IsUsed = true;
             _appDbContext.RefreshTokens.Update(storedToken);
@@ -232,18 +216,8 @@ namespace PaymentAPI.Services
                     return null;
                 }
             }
-            catch (Exception e)
+            catch
             {
-                if (e.Message.Contains("Lifetime validation failed. The token is expired."))
-                {
-                    var claims = new List<Claim>();
-                    claims.Add(new Claim(ClaimTypes.Actor, "expired"));
-                    var id = new ClaimsIdentity(claims, "expired");
-                    
-                    var claim = new ClaimsPrincipal();
-                    claim.AddIdentities(new List<ClaimsIdentity>(){id});
-                    return claim;
-                }
 
                 return null;
             }
