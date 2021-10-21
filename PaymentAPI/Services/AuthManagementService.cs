@@ -112,7 +112,7 @@ namespace PaymentAPI.Services
                     Success = false,
                     Errors = new List<string>()
                     {
-                        "Token does not exist"
+                        "Refresh Token does not exist"
                     }
                 };
             }
@@ -124,7 +124,7 @@ namespace PaymentAPI.Services
                     Success = false,
                     Errors = new List<string>()
                     {
-                        "Token has been revoked"
+                        "Refresh Token has been revoked"
                     }
                 };
             }
@@ -136,7 +136,7 @@ namespace PaymentAPI.Services
                     Success = false,
                     Errors = new List<string>()
                     {
-                        "Token has been used"
+                        "Refresh Token has been used"
                     }
                 };
             }
