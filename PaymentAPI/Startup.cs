@@ -47,6 +47,14 @@ namespace PaymentAPI
                                      ValidateLifetime = false,
                                      RequireExpirationTime = false,
              };
+            var tokenValidationParametersAuth = new TokenValidationParameters {
+                                  ValidateIssuerSigningKey = true,
+                                  IssuerSigningKey = new SymmetricSecurityKey(key),
+                                  ValidateIssuer = false,
+                                  ValidateAudience =false,
+                                  ValidateLifetime = true,
+                                  RequireExpirationTime = false,
+            };            
 
              //dependency injection
              services.AddScoped<IPaymentDetailService, PaymentDetailService>();
@@ -61,7 +69,7 @@ namespace PaymentAPI
              .AddJwtBearer(jwt =>
              {
                  jwt.SaveToken = true;
-                 jwt.TokenValidationParameters = tokenValidationParameters;
+                 jwt.TokenValidationParameters = tokenValidationParametersAuth;
              });
              
              services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
