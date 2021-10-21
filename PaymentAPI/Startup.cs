@@ -44,7 +44,7 @@ namespace PaymentAPI
                                      IssuerSigningKey = new SymmetricSecurityKey(key),
                                      ValidateIssuer = false,
                                      ValidateAudience =false,
-                                     ValidateLifetime = true,
+                                     ValidateLifetime = false,
                                      RequireExpirationTime = false,
              };
 
