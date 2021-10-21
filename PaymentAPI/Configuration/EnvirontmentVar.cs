@@ -7,7 +7,7 @@ namespace PaymentAPI.Configuration
     {
         public static string PostgreDatabaseConnection()
         {
-            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL_LOCAL");
             var databaseUri = new Uri(databaseUrl);
             var userInfo = databaseUri.UserInfo.Split(':');
             
@@ -17,9 +17,7 @@ namespace PaymentAPI.Configuration
                 Port = databaseUri.Port,
                 Username = userInfo[0],
                 Password = userInfo[1],
-                Database = databaseUri.LocalPath.TrimStart('/'),
-                SslMode = SslMode.Require,
-                TrustServerCertificate = true
+                Database = databaseUri.LocalPath.TrimStart('/')
             };
             
             return builder.ToString();
