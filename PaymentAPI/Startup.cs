@@ -96,7 +96,7 @@ namespace PaymentAPI
                         Id = JwtBearerDefaults.AuthenticationScheme
                     }
                 }; 
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TodoAppWithJWT", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PaymentAPI", Version = "v1" });
                 c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);  
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement  
                 {  
