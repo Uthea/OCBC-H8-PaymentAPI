@@ -54,9 +54,9 @@ namespace PaymentAPI.Services
 
             var key = Encoding.ASCII.GetBytes(_jwtSecret);
 
-            var expireTime = DateTime.UtcNow.AddMinutes(30);
+            var expireTime = DateTime.UtcNow.AddSeconds(10);
 
-            var expireDate = DateTime.UtcNow.AddHours(2);
+            var expireDate = DateTime.UtcNow.AddMinutes(5);
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
