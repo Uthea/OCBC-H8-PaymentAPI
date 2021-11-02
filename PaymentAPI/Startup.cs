@@ -23,8 +23,10 @@ using PaymentAPI.Services;
 
 namespace PaymentAPI
 {
+    
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -38,43 +40,59 @@ namespace PaymentAPI
             string connString = EnvirontmentVar.MySQLDatabaseConnection();
             string jwtSecret = EnvirontmentVar.GetJwtSecret();
 
-             var key = Encoding.ASCII.GetBytes(EnvirontmentVar.GetJwtSecret());
-             var tokenValidationParameters = new TokenValidationParameters {
-                                     ValidateIssuerSigningKey = true,
-                                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                                     ValidateIssuer = false,
-                                     ValidateAudience =false,
-                                     ValidateLifetime = false,
-                                     RequireExpirationTime = false,
-             };
-             
-             var tokenValidationParametersAuth = new TokenValidationParameters {
-                                                  ValidateIssuerSigningKey = true,
-                                                  IssuerSigningKey = new SymmetricSecurityKey(key),
-                                                  ValidateIssuer = false,
-                                                  ValidateAudience =false,
-                                                  ValidateLifetime = true,
-                                                  RequireExpirationTime = false,
-                          };
+            var key = Encoding.ASCII.GetBytes(EnvirontmentVar.GetJwtSecret());
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                RequireExpirationTime = false,
+                ClockSkew = TimeSpan.Zero
+            };
 
-             //dependency injection
-             services.AddScoped<IPaymentDetailService, PaymentDetailService>();
-             services.AddScoped<IAuthManagementService, AuthManagementService>();
-             services.AddSingleton(tokenValidationParameters);
-             services.AddSingleton(jwtSecret);
-             services.AddAuthentication(options => {
-                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-             })
-             .AddJwtBearer(jwt =>
-             {
-                 jwt.SaveToken = true;
-                 jwt.TokenValidationParameters = tokenValidationParametersAuth;
-             });
-             
-             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                     .AddEntityFrameworkStores<AppDbContext>();           
+            var tokenValidationParametersAuth = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            //dependency injection
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins(EnvirontmentVar.GetCorsUrl())
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+            services.AddScoped<IPaymentDetailService, PaymentDetailService>();
+            services.AddScoped<IAuthManagementService, AuthManagementService>();
+            services.AddSingleton(tokenValidationParameters);
+            services.AddSingleton(jwtSecret);
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(jwt =>
+                {
+                    jwt.SaveToken = true;
+                    jwt.TokenValidationParameters = tokenValidationParametersAuth;
+                });
+
+            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<AppDbContext>();
 
             services.AddDbContext<AppDbContext>(
                 options => options.UseMySQL(connString));
@@ -95,18 +113,16 @@ namespace PaymentAPI
                         Type = ReferenceType.SecurityScheme,
                         Id = JwtBearerDefaults.AuthenticationScheme
                     }
-                }; 
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PaymentAPI", Version = "v1" });
-                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);  
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement  
-                {  
+                };
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "PaymentAPI", Version = "v1"});
+                c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
-                       jwtSecurityScheme, Array.Empty<string>()
-                    }  
-                }); 
-                
+                        jwtSecurityScheme, Array.Empty<string>()
+                    }
+                });
             });
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -122,6 +138,7 @@ namespace PaymentAPI
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 
