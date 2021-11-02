@@ -25,6 +25,7 @@ namespace PaymentAPI
 {
     public class Startup
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins"; 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -46,6 +47,7 @@ namespace PaymentAPI
                                      ValidateAudience =false,
                                      ValidateLifetime = false,
                                      RequireExpirationTime = false,
+                                     ClockSkew = TimeSpan.Zero 
              };
             var tokenValidationParametersAuth = new TokenValidationParameters {
                                   ValidateIssuerSigningKey = true,
@@ -54,9 +56,20 @@ namespace PaymentAPI
                                   ValidateAudience =false,
                                   ValidateLifetime = true,
                                   RequireExpirationTime = false,
+                                  ClockSkew = TimeSpan.Zero 
             };            
 
              //dependency injection
+             services.AddCors(options =>
+             {
+                 options.AddPolicy(name: MyAllowSpecificOrigins,
+                     builder =>
+                     {
+                         builder.WithOrigins(EnvirontmentVar.GetCorsUrl())
+                             .AllowAnyHeader()
+                             .AllowAnyMethod();
+                     });
+             }); 
              services.AddScoped<IPaymentDetailService, PaymentDetailService>();
              services.AddScoped<IAuthManagementService, AuthManagementService>();
              services.AddSingleton(tokenValidationParameters);
@@ -121,6 +134,8 @@ namespace PaymentAPI
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseAuthorization();
 

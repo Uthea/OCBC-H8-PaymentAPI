@@ -29,5 +29,10 @@ namespace PaymentAPI.Configuration
         {
             return Environment.GetEnvironmentVariable("SECRET");
         }
+        
+        public static string GetCorsUrl()
+        {
+            return Environment.GetEnvironmentVariable("FRONT_END_URL");
+        } 
     }
 }
